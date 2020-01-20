@@ -45,6 +45,24 @@ def list_processor(generator, old_value):
 	except:
 		return old_value
 
+# attempts to assign the next
+# argument value to an option
+# if it's an integer. Otherwise
+# leaves the default value as is
+def integer_processor(generator, old_value):
+	value = None
+
+	try:
+		value = next(generator)
+	except:
+		return old_value
+
+	try:
+		return int(value)
+	except:
+		print("Warning > Ignoring value '" + value + "' because it's not an integer")
+		return old_value
+
 
 # registers a new option
 def add_option(name, default_value='', processor=single_argument_processor):
@@ -58,6 +76,10 @@ def add_flag(name):
 # registers a new list option
 def add_list(name):
 	add_option(name, [], processor=list_processor)
+
+# registers a new integer option
+def add_integer(name, default_value=0):
+	add_option(name, default_value, processor=integer_processor)
 
 # registers a new alias.
 # requires an option to exist

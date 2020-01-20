@@ -9,6 +9,7 @@
 #include <any>
 #include <vector>
 #include <string>
+#include <charconv>
 #include <unordered_map>
 
 
@@ -162,6 +163,34 @@ namespace arrrgh {
         }
     }
 
+    /*
+        Attempts to assign the next
+        argument value to an option
+        if it's an integer. Otherwise
+        leaves the default value as is
+    */
+    void integer_processor(
+        StringLike option_name,
+        const Arguments & arguments
+    ) {
+        if (arguments.has_next()) {
+            auto value = arguments.next();
+
+            auto result = std::from_chars(
+                value.data(),
+                value.data() + value.size(),
+                options<int>[option_name]
+            );
+
+            if (
+                result.ec == std::errc::invalid_argument ||
+                result.ec == std::errc::result_out_of_range
+            ) {
+                std::cout << "Warning > Ignoring value '" << value << "' because it's not an integer" << std::endl;
+            }
+        }
+    }
+
 
     /*
         Registers a new option.
@@ -213,6 +242,16 @@ namespace arrrgh {
         StringLike option_name
     ) {
         add_option(option_name, List(), list_processor);
+    }
+
+    /*
+        Registers a new integer option
+    */
+    void add_integer(
+        StringLike option_name,
+        int default_value = 0
+    ) {
+        add_option(option_name, default_value, integer_processor);
     }
 
 

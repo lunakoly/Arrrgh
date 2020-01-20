@@ -4,8 +4,8 @@ Some handy code for handling cli arguments.
 # General Things
 Arrrgh supports _free parameters_, _options_ (`--option`) and _aliases_ to options (`-a`).
 Options and aliases trigger _processor_ functions that are responsible of determining the proper value for them.
-Processors (as well as option values) are not bound to strings and may be anything but one may need to create
-aditional processors themself. Processor functions take the arguments stream as a parameter and may look
+Processors (as well as option values) are not bound to strings.
+Processor functions take the arguments stream as a parameter and may look
 for any number of next values.
 
 # Processors
@@ -21,10 +21,16 @@ Assigns `True` to an `--option` when it's met. If used with the corresponding op
 - C++: `flag_processor`
 
 ## List Processor
-Collects all values that follow immidiately after `--name`. Expects the default value to be a list.
+Collects all values that follow immediately after `--option`. Expects the default value to be a list.
 Default value is a list if the option is registered with the corresponding function
 - Python: `list_processor`
 - C++: `list_processor`
+
+## Integer Processor
+Sets the next argument after `--option` as it's value discarding all previous values
+if it's an integer. Otherwise leaves the default value as is
+- Python: `integer_processor`
+- C++: `integer_processor`
 
 # Python
 ## Example
@@ -35,10 +41,12 @@ import arrrgh
 arrrgh.add_option("source");
 arrrgh.add_flag("flag");
 arrrgh.add_list("tag");
+arrrgh.add_integer("number", 10);
 
 arrrgh.add_alias('s', "source");
 arrrgh.add_alias('f', "flag");
 arrrgh.add_alias('t', "tag");
+arrrgh.add_alias('n', "number");
 
 arrrgh.parse()
 ```
@@ -77,6 +85,13 @@ def add_list(name)
 - Registers a new list option. Empty list by default. Collects all values that follow immidiately after `--name`
 
 ```python
+def integer_processor(generator, old_value)
+```
+
+- Attempts to assign the next argument value to an option
+if it's an integer. Otherwise leaves the default value as is
+
+```python
 def parse(stream=sys.argv)
 ```
 - Analyses the arguments.
@@ -92,10 +107,12 @@ Define options as:
 arrrgh::add_option("source");
 arrrgh::add_flag("flag");
 arrrgh::add_list("tag");
+arrrgh::add_integer("number", 10);
 
 arrrgh::add_alias('s', "source");
 arrrgh::add_alias('f', "flag");
 arrrgh::add_alias('t', "tag");
+arrrgh::add_alias('n', "number");
 
 arrrgh::parse(argv, argv + argc);
 ```
@@ -104,6 +121,10 @@ And access values via:
 ```python
 for (auto it : arrrgh::options<arrrgh::StringLike>) {
   std::cout << "option: " << it.first << " -> \"" << it.second << '\"' << std::endl;
+}
+
+for (auto it : arrrgh::options<int>) {
+  std::cout << "option: " << it.first << " -> " << it.second << std::endl;
 }
 
 for (auto it : arrrgh::options<bool>) {
@@ -164,6 +185,13 @@ void add_flag(StringLike option_name)
 void add_list(StringLike option_name)
 ```
 - Registers a new list option. Empty list by default. Collects all values that follow immidiately after `--name`
+
+```c++
+void add_integer(StringLike option_name, int default_value = 0)
+```
+
+- Registers a new integer option. If the new value can be converted to
+a string via `std::from_chars`, converts it and assigns to `--name`
 
 ```c++
 template <typename Iterator>

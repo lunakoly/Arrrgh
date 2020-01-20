@@ -7,11 +7,13 @@ if __name__ == "__main__":
 	arrrgh.add_flag("flag");
 	arrrgh.add_flag("brag");
 	arrrgh.add_list("tag");
+	arrrgh.add_integer("number", 123);
 
 	arrrgh.add_alias('s', "source");
 	arrrgh.add_alias('f', "flag");
 	arrrgh.add_alias('b', "brag");
 	arrrgh.add_alias('t', "tag");
+	arrrgh.add_alias('n', "number");
 
 	print("Parsing arguments...")
 
