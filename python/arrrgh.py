@@ -1,4 +1,4 @@
-# Copyright (C) 2019 luna_koly, MIT
+# Copyright (C) 2020 luna_koly
 #
 # This scripts simplifies input arguments
 # management.
@@ -63,6 +63,24 @@ def integer_processor(generator, old_value):
 		print("Warning > Ignoring value '" + value + "' because it's not an integer")
 		return old_value
 
+# attempts to assign the next
+# argument value to an option
+# if it's a float. Otherwise
+# leaves the default value as is
+def float_processor(generator, old_value):
+	value = None
+
+	try:
+		value = next(generator)
+	except:
+		return old_value
+
+	try:
+		return float(value)
+	except:
+		print("Warning > Ignoring value '" + value + "' because it's not a float")
+		return old_value
+
 
 # registers a new option
 def add_option(name, default_value='', processor=single_argument_processor):
@@ -80,6 +98,10 @@ def add_list(name):
 # registers a new integer option
 def add_integer(name, default_value=0):
 	add_option(name, default_value, processor=integer_processor)
+
+# registers a new float option
+def add_float(name, default_value=0):
+	add_option(name, default_value, processor=float_processor)
 
 # registers a new alias.
 # requires an option to exist

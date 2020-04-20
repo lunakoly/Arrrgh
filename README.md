@@ -32,6 +32,12 @@ if it's an integer. Otherwise leaves the default value as is
 - Python: `integer_processor`
 - C++: `integer_processor`
 
+## Float Processor
+Sets the next argument after `--option` as it's value discarding all previous values
+if it's a float. Otherwise leaves the default value as is
+- Python: `float_processor`
+- C++: `float_processor`
+
 # Python
 ## Example
 Define options as:
@@ -85,11 +91,14 @@ def add_list(name)
 - Registers a new list option. Empty list by default. Collects all values that follow immidiately after `--name`
 
 ```python
-def integer_processor(generator, old_value)
+def add_integer(name, default_value=0):
 ```
+- Registers a new integer option. 0 by default. Equals to the last met value for `--name`
 
-- Attempts to assign the next argument value to an option
-if it's an integer. Otherwise leaves the default value as is
+```python
+def add_float(name, default_value=0):
+```
+- Registers a new float option. 0.0 by default. Equals to the last met value for `--name`
 
 ```python
 def parse(stream=sys.argv)
@@ -189,9 +198,14 @@ void add_list(StringLike option_name)
 ```c++
 void add_integer(StringLike option_name, int default_value = 0)
 ```
-
-- Registers a new integer option. If the new value can be converted to
+- Registers a new integer option. If the new value can be converted from
 a string via `std::from_chars`, converts it and assigns to `--name`
+
+```c++
+void add_float(StringLike option_name, double default_value = 0.0)
+```
+- Registers a new float option. If the new value can be converted from
+a string via `std::strtod`, converts it and assigns to `--name`
 
 ```c++
 template <typename Iterator>

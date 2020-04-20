@@ -68,7 +68,7 @@ namespace arrrgh {
     };
 
     /*
-        Implements Arguments based of two iterators
+        Implements Arguments based on two iterators
     */
     template <typename Iterator>
     class Sequence : public Arguments {
@@ -191,6 +191,33 @@ namespace arrrgh {
         }
     }
 
+    /*
+        Attempts to assign the next
+        argument value to an option
+        if it's an integer. Otherwise
+        leaves the default value as is
+    */
+    void float_processor(
+        StringLike option_name,
+        const Arguments & arguments
+    ) {
+        if (arguments.has_next()) {
+            auto value = arguments.next();
+            errno = 0;
+            char * end;
+
+            options<double>[option_name] = std::strtod(value.data(), &end);
+
+            if (
+                *end != '\0' ||
+                errno != 0 ||
+                end == value.data()
+            ) {
+                std::cout << "Warning > Ignoring value '" << value << "' because it's not a float" << std::endl;
+            }
+        }
+    }
+
 
     /*
         Registers a new option.
@@ -252,6 +279,16 @@ namespace arrrgh {
         int default_value = 0
     ) {
         add_option(option_name, default_value, integer_processor);
+    }
+
+    /*
+        Registers a new float option
+    */
+    void add_float(
+        StringLike option_name,
+        double default_value = 0.0
+    ) {
+        add_option(option_name, default_value, float_processor);
     }
 
 
