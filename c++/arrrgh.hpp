@@ -1,4 +1,4 @@
-// Copyright (C) 2020 luna_koly, MIT
+// Copyright (C) 2020 luna_koly
 //
 // This code simplifies input arguments
 // management.
